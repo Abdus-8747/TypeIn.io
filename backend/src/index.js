@@ -6,12 +6,15 @@ import messageRoute from "./routes/message.route.js"
 import cors from "cors"
 import { app,server} from "./lib/socket.js"
 
+import path from "path"
+
 import { connectDB } from "./lib/db.js"
 
 dotenv.config()
 
 
 const PORT = process.env.PORT 
+const _dirname = path.resolve() 
 connectDB()
 
 app.use(express.json())
@@ -26,6 +29,13 @@ app.use('/api/messages', messageRoute)
 
 app.get('/', (req, res) => {
     res.send('API is running...')
+})
+
+if(process.env.NODE_ENV)
+    app.use(express.static(path.join(_dirname, "../frontend/dist")))
+
+app.get('*', (req,res) => {
+    res.sendFile(path.join(_dirname, "../frontend", "dist", "index.html"))
 })
 
 server.listen(PORT, () => {
