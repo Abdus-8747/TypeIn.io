@@ -14,7 +14,7 @@ dotenv.config()
 
 
 const PORT = process.env.PORT 
-const _dirname = path.resolve() 
+//const _dirname = path.resolve() 
 connectDB()
 
 app.use(express.json())
@@ -30,13 +30,16 @@ app.use('/api/messages', messageRoute)
 app.get('/', (req, res) => {
     res.send('API is running...')
 })
+const _dirname = path.resolve()
 
-if(process.env.NODE_ENV)
-    app.use(express.static(path.join(_dirname, "../frontend/dist")))
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(_dirname, "../frontend/dist")))
 
-app.get('*', (req,res) => {
+  app.get('*', (req, res) => {
     res.sendFile(path.join(_dirname, "../frontend", "dist", "index.html"))
-})
+  })
+}
+
 
 server.listen(PORT, () => {
     console.log(`Server started at http://localhost:${PORT}`)
