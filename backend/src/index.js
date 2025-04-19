@@ -4,12 +4,13 @@ import cookieParser from "cookie-parser"
 import authRoute from "./routes/auth.route.js"
 import messageRoute from "./routes/message.route.js"
 import cors from "cors"
+import { app,server} from "./lib/socket.js"
 
 import { connectDB } from "./lib/db.js"
 
 dotenv.config()
 
-const app = express()
+
 const PORT = process.env.PORT 
 connectDB()
 
@@ -27,6 +28,6 @@ app.get('/', (req, res) => {
     res.send('API is running...')
 })
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server started at http://localhost:${PORT}`)
 })

@@ -3,22 +3,37 @@ import { useChatStore } from '../store/useChatStore';
 import ChatHeader from './ChatHeader';
 import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton';
-import { useAuthStore } from '../store/useAuthStore'; // Assuming you have one
-import { formatMessageTime } from '../lib/utils'; // Or define your own utility
+import { useAuthStore } from '../store/useAuthStore'; 
+import { formatMessageTime } from '../lib/utils'; 
 
 const ChatContainer = () => {
-  const { messages, getMessages, isMessagesLoading, selectedUser } = useChatStore();
-  const { authUser } = useAuthStore(); // Assuming authUser is stored in auth store
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+    subscribeToMessages,
+    unsubscribeFromMessages
+  } = useChatStore();
+
+  const { authUser } = useAuthStore(); 
   const messageEndRef = useRef(null);
 
+  // Fetch and subscribe to messages
   useEffect(() => {
     if (selectedUser?._id) {
       getMessages(selectedUser._id);
     }
-  }, [selectedUser._id, getMessages]);
 
+    subscribeToMessages();
+    return () => unsubscribeFromMessages();
+  }, [selectedUser._id]);
+
+  // Scroll to bottom when messages change
   useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   if (isMessagesLoading) {
@@ -32,15 +47,14 @@ const ChatContainer = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-auto">
+    <div className="flex-1 flex flex-col overflow-hidden">
       <ChatHeader />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message, index) => (
+        {messages.map((message) => (
           <div
             key={message._id}
             className={`chat ${message.senderId === authUser._id ? 'chat-end' : 'chat-start'}`}
-            ref={index === messages.length - 1 ? messageEndRef : null}
           >
             <div className="chat-image avatar">
               <div className="size-10 rounded-full border">
@@ -71,6 +85,8 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
+        {/* This div ensures smooth scroll to bottom */}
+        <div ref={messageEndRef} />
       </div>
 
       <MessageInput />

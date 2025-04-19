@@ -47,7 +47,7 @@ const MessageInput = () => {
     
         try {
             const res = await sendMessage(messageData); // Call the sendMessage function
-            console.log("Message sent:", res);
+            //console.log("Message sent:", res);
     
             // Clear input fields after sending message
             setText("");
