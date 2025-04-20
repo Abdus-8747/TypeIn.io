@@ -21,13 +21,14 @@ const ChatContainer = () => {
 
   // Fetch and subscribe to messages
   useEffect(() => {
-    if (selectedUser?._id) {
-      getMessages(selectedUser._id);
-    }
-
+    if (!selectedUser?._id) return; // ✅ Prevent undefined errors
+  
+    getMessages(selectedUser._id);
     subscribeToMessages();
+  
     return () => unsubscribeFromMessages();
-  }, [selectedUser._id]);
+  }, [selectedUser?._id]);
+  
 
   // Scroll to bottom when messages change
   useEffect(() => {
